@@ -25,10 +25,10 @@ jobs:
     
     - name: Install dependencies
       run: |
-        pip install -r services/catalog/requirements.txt
-        pip install -r services/cart/requirements.txt
-        pip install -r services/order/requirements.txt
-        pip install -r services/payment/requirements.txt
+        pip install -r cloud/services/catalog/requirements.txt
+        pip install -r cloud/services/cart/requirements.txt
+        pip install -r cloud/services/order/requirements.txt
+        pip install -r cloud/services/payment/requirements.txt
         pip install pytest pytest-asyncio httpx
     
     - name: Run tests (if any)
@@ -50,7 +50,7 @@ jobs:
     - name: Build and push Catalog Service
       uses: docker/build-push-action@v4
       with:
-        context: ./services/catalog
+        context: ./cloud/services/catalog
         push: ${{ github.event_name == 'push' }}
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-service:latest,${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-service:${{ github.sha }}
         cache-from: type=gha
@@ -59,7 +59,7 @@ jobs:
     - name: Build and push Cart Service
       uses: docker/build-push-action@v4
       with:
-        context: ./services/cart
+        context: ./cloud/services/cart
         push: ${{ github.event_name == 'push' }}
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/cart-service:latest,${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/cart-service:${{ github.sha }}
         cache-from: type=gha
@@ -68,7 +68,7 @@ jobs:
     - name: Build and push Order Service
       uses: docker/build-push-action@v4
       with:
-        context: ./services/order
+        context: ./cloud/services/order
         push: ${{ github.event_name == 'push' }}
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:latest,${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:${{ github.sha }}
         cache-from: type=gha
@@ -77,7 +77,7 @@ jobs:
     - name: Build and push Payment Service
       uses: docker/build-push-action@v4
       with:
-        context: ./services/payment
+        context: ./cloud/services/payment
         push: ${{ github.event_name == 'push' }}
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/payment-service:latest,${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/payment-service:${{ github.sha }}
         cache-from: type=gha
@@ -86,7 +86,7 @@ jobs:
     - name: Build and push Dashboard
       uses: docker/build-push-action@v4
       with:
-        context: ./dashboard
+        context: ./cloud/dashboard
         push: ${{ github.event_name == 'push' }}
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/dashboard:latest,${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/dashboard:${{ github.sha }}
         cache-from: type=gha
@@ -112,16 +112,16 @@ jobs:
     - name: Update Kubernetes manifests with new image tags
       run: |
         # Update image tags in deployment files
-        sed -i "s|image: catalog-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-service:${{ github.sha }}|g" k8s/catalog/deployment.yaml
-        sed -i "s|image: cart-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/cart-service:${{ github.sha }}|g" k8s/cart/deployment.yaml
-        sed -i "s|image: order-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:${{ github.sha }}|g" k8s/order/deployment.yaml
-        sed -i "s|image: payment-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/payment-service:${{ github.sha }}|g" k8s/payment/deployment.yaml
-        sed -i "s|image: dashboard:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/dashboard:${{ github.sha }}|g" k8s/dashboard/deployment.yaml
+        sed -i "s|image: catalog-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-service:${{ github.sha }}|g" cloud/k8s/catalog/deployment.yaml
+        sed -i "s|image: cart-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/cart-service:${{ github.sha }}|g" cloud/k8s/cart/deployment.yaml
+        sed -i "s|image: order-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:${{ github.sha }}|g" cloud/k8s/order/deployment.yaml
+        sed -i "s|image: payment-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/payment-service:${{ github.sha }}|g" cloud/k8s/payment/deployment.yaml
+        sed -i "s|image: dashboard:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/dashboard:${{ github.sha }}|g" cloud/k8s/dashboard/deployment.yaml
     
     - name: Deploy to Kubernetes
       run: |
-        kubectl apply -f k8s/namespace.yaml
-        kubectl apply -f k8s/
+        kubectl apply -f cloud/k8s/namespace.yaml
+        kubectl apply -f cloud/k8s/
     
     - name: Wait for deployments
       run: |
