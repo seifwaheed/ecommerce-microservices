@@ -33,6 +33,7 @@ jobs:
     
     - name: Run tests (if any)
       run: |
+        echo "Running CI/CD pipeline test"
         echo "Tests would run here"
         # Add your test commands here
     
