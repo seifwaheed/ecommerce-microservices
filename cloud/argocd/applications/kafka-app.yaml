@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/seifwaheed/ecommerce-microservices.git
     targetRevision: HEAD
-    path: kafka
+    path: cloud/kafka
   destination:
     server: https://kubernetes.default.svc
     namespace: ecommerce

@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/seifwaheed/ecommerce-microservices.git
     targetRevision: HEAD
-    path: k8s
+    path: cloud/k8s
   destination:
     server: https://kubernetes.default.svc
     namespace: ecommerce
