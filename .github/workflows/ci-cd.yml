@@ -92,42 +92,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-    
-    - name: Configure kubectl
-      run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
-        export KUBECONFIG=./kubeconfig
-    
-    - name: Update Kubernetes manifests with new image tags
-      run: |
-        # Update image tags in deployment files
-        sed -i "s|image: catalog-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/catalog-service:${{ github.sha }}|g" cloud/k8s/catalog/deployment.yaml
-        sed -i "s|image: cart-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/cart-service:${{ github.sha }}|g" cloud/k8s/cart/deployment.yaml
-        sed -i "s|image: order-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/order-service:${{ github.sha }}|g" cloud/k8s/order/deployment.yaml
-        sed -i "s|image: payment-service:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/payment-service:${{ github.sha }}|g" cloud/k8s/payment/deployment.yaml
-        sed -i "s|image: dashboard:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/dashboard:${{ github.sha }}|g" cloud/k8s/dashboard/deployment.yaml
-    
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f cloud/k8s/namespace.yaml
-        kubectl apply -f cloud/k8s/
-    
-    - name: Wait for deployments
-      run: |
-        kubectl wait --for=condition=available --timeout=300s deployment/catalog-service -n ecommerce
-        kubectl wait --for=condition=available --timeout=300s deployment/cart-service -n ecommerce
-        kubectl wait --for=condition=available --timeout=300s deployment/order-service -n ecommerce
-        kubectl wait --for=condition=available --timeout=300s deployment/payment-service -n ecommerce
-        kubectl wait --for=condition=available --timeout=300s deployment/dashboard -n ecommerce
+  # NOTE:
+  # Deployment to Kubernetes is handled by Argo CD using the manifests in `cloud/argocd/applications`.
+  # This CI pipeline is responsible for building and pushing Docker images only.
 
