@@ -11,7 +11,7 @@ A containerized microservices e-commerce backend with fully isolated services fo
 - **Order Tracking Dashboard** (Port 30000): Real-time order status monitoring
 
 ## 🛠️ Technologies
-
+scd
 - **FastAPI**: Microservices framework (Python)
 - **Docker**: Containerization
 - **KinD**: Local Kubernetes cluster
