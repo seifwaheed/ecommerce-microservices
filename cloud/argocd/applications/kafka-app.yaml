@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourusername/cloud.git
+    repoURL: https://github.com/seifwaheed/ecommerce-microservices.git
     targetRevision: HEAD
     path: kafka
   destination:
